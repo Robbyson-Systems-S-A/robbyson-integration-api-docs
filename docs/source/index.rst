@@ -1,7 +1,7 @@
 Robbyson Integration API
 ========
 
-.. image:: logo.png
+.. image:: logo.svg
     :width: 120px
     :alt: Robbyson logo
     :align: center
