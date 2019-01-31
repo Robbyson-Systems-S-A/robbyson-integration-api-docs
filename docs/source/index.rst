@@ -21,6 +21,6 @@ Sumário
 .. toctree::
    :maxdepth: 2
 
-   enderecos-forma-consulta.rst
+   enderecos-forma-consulta.md
    autenticacao.md
-   recursos.rst
+   recursos.md
