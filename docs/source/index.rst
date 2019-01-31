@@ -22,5 +22,5 @@ Sumário
    :maxdepth: 2
 
    enderecos-forma-consulta.rst
-   autenticacao.rst
+   autenticacao.md
    recursos.rst
