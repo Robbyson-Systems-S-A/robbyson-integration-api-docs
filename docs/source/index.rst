@@ -16,11 +16,10 @@ Espera-se que o utilizador desta API tenha conhecimentos básicos de requisiçõ
 Sumário
 ========
 
-:ref:`Keyword Index <genindex>`, :ref:`Search Page <search>`
-
 .. toctree::
    :maxdepth: 2
 
    enderecos-forma-consulta.md
    autenticacao.md
    recursos.md
+   workflow.md

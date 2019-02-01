@@ -1,4 +1,4 @@
-## Autenticação 
+## Autenticação
 
 Todo o tráfego de informações entre a API e seus clientes deve ser autenticado. Esta identificação é feita através de um `Token` (chave única por cliente), que será disponibilizado pela equipe de implantação e suporte Robbyson. Este token é gerado de forma automática, e pode ser renovado em caso de perda do anterior. 
 
