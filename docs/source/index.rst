@@ -23,3 +23,4 @@ Sumário
    autenticacao.md
    recursos.md
    workflow.md
+   anexos.md

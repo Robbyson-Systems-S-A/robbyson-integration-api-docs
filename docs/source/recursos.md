@@ -8,33 +8,98 @@ Conforme dito anteriormente, os recursos são acessados através de uma url, que
 **Identificação:** `/collaborators`
 
 ```js
-// Descever aqui o recurso
+[
+  {
+    "name": "string",               // campo obrigatório
+    "identification": "string",     // campo obrigatório
+    "matricula": "string",          // campo obrigatório
+    "genre": "M",                   // campo obrigatório
+    "active": true,                 // campo obrigatório
+    "birthDate": "2018-12-07",      // campo obrigatório
+    "admissionDate": "2018-12-07",
+    "email": "user@example.com",
+    "civilState": "string",
+    "street": "string",
+    "number": 0,
+    "neighborhood": "string",
+    "city": "string",
+    "state": "string",
+    "country": "string",
+    "placeOfBirth": "string",
+    "homeNumber": "string",
+    "phoneNumber": "string",
+    "schooling": "string",
+    "streetWorkPlace": "string",
+    "numberWorkPlace": 0,
+    "neighborhoodWorkPlace": "string",
+    "cityWorkPlace": "string",
+    "stateWorkPlace": "string",
+    "countryWorkPlace": "string",
+    "contractorControlId": "string",
+    "dependantsNumber": 0
+  }
+]
 ```
 
 ### Indicadores
 **Identificação:** `/indicators`
 
 ```js
-// Descever aqui o recurso
+[
+  {
+    "name": "string",
+    "indicatorId": "string",
+    "description": "string"
+  }
+]
 ```
 
 ### Atributos
 **Identificação:** `/attributes`
 
 ```js
-// Descever aqui o recurso
+[
+  {
+    "collaboratorIdentification": "string",
+    "name": "string",
+    "level": 0,
+    "value": "string",
+    "date": "2018-12-07"
+  }
+]
 ```
 
 ### Hierarquia
 **Identificação:** `/hierarchies`
 
 ```js
-// Descever aqui o recurso
+[
+  {
+    "collaboratorIdentification": "string",
+    "levelName": "string",
+    "levelWeight": 0,
+    "parentIdentification": "string",
+    "contractorControlId": "string",
+    "date": "2018-12-07"
+  }
+]
 ```
 
 ### Resultados
 **Identificação:** `/results`
 
 ```js
-// Descever aqui o recurso
+[
+  {
+    "collaboratorIdentification": "string",
+    "indicadorId": "string",
+    "resultado": "string",
+    "date": "2018-12-07",
+    "factors": [
+      1,
+      2,
+      3
+    ]
+  }
+]
 ```
