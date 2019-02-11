@@ -19,7 +19,7 @@ Sumário
 .. toctree::
    :maxdepth: 2
 
-   enderecos-forma-consulta.md
+   enderecos-forma-consulta.rst
    autenticacao.md
    recursos.md
    workflow.md
