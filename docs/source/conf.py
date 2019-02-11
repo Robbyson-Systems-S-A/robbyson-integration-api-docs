@@ -24,8 +24,8 @@ source_parsers = {
 
 # -- Project information -----------------------------------------------------
 
-project = u'sample API documentation'
-copyright = u'2019, Luis Philipe'
+project = u'Robbyson API Documentation'
+copyright = u'2019, Robbyson Corp'
 author = u'Luis Philipe'
 
 # The short X.Y version
@@ -136,7 +136,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'sampleAPIdocumentation.tex', u'sample API documentation Documentation',
+    (master_doc, 'sampleAPIdocumentation.tex', u'Robbyson API Documentation',
      u'Luis Philipe', 'manual'),
 ]
 
@@ -146,7 +146,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'sampleapidocumentation', u'sample API documentation Documentation',
+    (master_doc, 'sampleapidocumentation', u'Robbyson API Documentation',
      [author], 1)
 ]
 
@@ -157,7 +157,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'sampleAPIdocumentation', u'sample API documentation Documentation',
+    (master_doc, 'sampleAPIdocumentation', u'Robbyson API Documentation',
      author, 'sampleAPIdocumentation', 'One line description of project.',
      'Miscellaneous'),
 ]
