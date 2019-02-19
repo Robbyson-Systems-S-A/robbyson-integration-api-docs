@@ -22,5 +22,5 @@ Sumário
    enderecos-forma-consulta.rst
    autenticacao.md
    recursos.md
-   workflow.md
+   workflow.rst
    anexos.md
