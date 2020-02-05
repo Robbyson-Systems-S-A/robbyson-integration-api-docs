@@ -25,7 +25,7 @@ seguida.
 .. code:: bash
 
    $ curl \
-       -X POST "https://integration.api.robbyson.com/v1/transactions/" \
+       -X POST "https://integration-api.robbyson.com/v1/transactions/" \
        -H "token: ubogfszb2y9iti8njcmar4e39cg73m"
 
    $ {"data":{"_id":"8201903116563853","apiIntegrationScope":[],"status":1,"descStatus":"Created","date":"2019-01-31T16:56:03.824Z"},"statusLog":[{"type":3}]}
@@ -59,7 +59,7 @@ recurso requer (estes serão descritos em outro tópico):
 
    # envio de um pacote de dados de colaboradores concluído com sucesso.
    $ curl \
-     -X POST "https://integration.api.robbyson.com/v1/collaborators/?transaction_id=8201903116563853" \
+     -X POST "https://integration-api.robbyson.com/v1/collaborators/?transaction_id=8201903116563853" \
      -H  "accept: application/json" \
      -H "token: ubogfszb2y9iti8njcmar4e39cg73m" \
      -H  "content-type: application/json" \
@@ -87,7 +87,7 @@ recurso requer (estes serão descritos em outro tópico):
 
    # envio de um pacote de atualização de colaboradores.
    $ curl \
-     -X PUT "https://integration.api.robbyson.com/v1/collaborators/?transaction_id=8201903116563853" \
+     -X PUT "https://integration-api.robbyson.com/v1/collaborators/?transaction_id=8201903116563853" \
      -H  "accept: application/json" \
      -H "token: ubogfszb2y9iti8njcmar4e39cg73m" \
      -H  "content-type: application/json" \
@@ -107,7 +107,7 @@ recurso requer (estes serão descritos em outro tópico):
 
    # Envio de pacote de dados de colaboradores, sem o campo `name`, que é obrigatório para este recurso.
    $ curl \
-     -X POST "https://integration.api.robbyson.com/v1/collaborators/?transaction_id=8201903116563853" \
+     -X POST "https://integration-api.robbyson.com/v1/collaborators/?transaction_id=8201903116563853" \
      -H  "accept: application/json" \
      -H "token: ubogfszb2y9iti8njcmar4e39cg73m" \
      -H  "content-type: application/json" \
@@ -143,7 +143,7 @@ informando o id dela.
 .. code:: bash
 
    $ curl \
-       -X POST "https://integration.api.robbyson.com/v1/transactions/8201903116563853" \
+       -X POST "https://integration-api.robbyson.com/v1/transactions/8201903116563853" \
        -H "token: ubogfszb2y9iti8njcmar4e39cg73m"
 
    $ {"data":{"n":1,"nModified":1,"ok":1},"statusLog":[{"type":3}]}
@@ -166,7 +166,7 @@ transação.
 .. code:: bash
 
    # consulta ao status da transação
-   $ curl "https://integration.api.robbyson.com/v1/transactions/8201903116563853" \
+   $ curl "https://integration-api.robbyson.com/v1/transactions/8201903116563853" \
        -H "token: ubogfszb2y9iti8njcmar4e39cg73m"
 
    $ {"data":{"_id":"82019031182037426","apiIntegrationScope":[],"status":1,"descStatus":"Created","date":"2019-01-31T18:20:37.402Z"},"statusLog":[{"type":3}]}

@@ -14,5 +14,5 @@ Dado o funcionamento via requisições aos serviços, deve-se notar que a constr
 
 | Ambiente | Endereço |
 | - | - | 
-| Produção | https://integration.api.robbyson.com/v1 |
+| Produção | https://integration-api.robbyson.com/v1 |
 | Testes | https://integration-sandbox.robbyson.com/v1 |

@@ -40,6 +40,6 @@ Os recursos também serão detalhados nos próximos tópicos.
 ======== ===========================================
 Ambiente Endereço
 ======== ===========================================
-Produção https://integration.api.robbyson.com/v1
+Produção https://integration-api.robbyson.com/v1
 Testes   https://integration-sandbox.robbyson.com/v1
 ======== ===========================================
