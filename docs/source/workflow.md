@@ -110,6 +110,17 @@ $ curl \
 $ {"data":{"n":1,"nModified":1,"ok":1},"statusLog":[{"type":3}]}
 ```
 
+Opcionalmente, é possível enviar as opções de `startDate` e `endDate` na query do commit. Estes campos vão informar o intervalo de dados a serem processados pelo Robbyson, apesar do pacote enviado possuir dados de datas diferentes. Estes campos são úteis para os casos onde deseja-se processar um pacote menor de dados, mesmo que o script produtor de dados seja o mesmo que produza um pacote maior.
+
+```bash
+$ curl \
+    -X POST "https://integration-api.robbyson.com/v1/transactions/8201903116563853?startDate=2000-01-01&endDate=2000-01-20" \
+    -H "token: ubogfszb2y9iti8njcmar4e39cg73m"
+
+$ {"data":{"n":1,"nModified":1,"ok":1},"statusLog":[{"type":3}]}
+```
+
+
 #### Esteira de processamento
 
 O último passo da API que requer intervenção do cliente é o commit da transação. Após o commit, entra em ação os mecanismos de integração de dados do Robbyson.

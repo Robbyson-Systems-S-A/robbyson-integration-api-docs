@@ -1,10 +1,10 @@
 Endereços e formas de consulta
 ------------------------------
 
-A API de Integração do Robbyson foi desenvolvida na arquitetura `REST`_.
+A API de Integração do Robbyson foi desenvolvida na arquitetura `REST <https://en.wikipedia.org/wiki/Representational_state_transfer>`_.
 Desta forma, toda comunicação é baseada em requisições ``https``, não
 dependendo da linguagem escolhida como cliente desta API. Esta
-arquitetura também prevê a utilização dos `verbos http`_ para denotar
+arquitetura também prevê a utilização dos `verbos http <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods>`_ para denotar
 quais ações estão sendo executadas em determinado momento.
 
 De forma geral, entende-se que podem ser executadas três tipos

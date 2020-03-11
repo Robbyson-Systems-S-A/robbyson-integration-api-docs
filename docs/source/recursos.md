@@ -69,6 +69,8 @@ Conforme dito anteriormente, os recursos são acessados através de uma url, que
 ]
 ```
 
+> **Importante:** As datas dos atributos podem ser informadas para um intervalo completo, se estas se repetirem por todo este período. Para isso, basta substituir o campo `date` por `startDate` e `endDate`, contemplando todo o intervalo a ser integrado.
+
 ### Hierarquia
 **Identificação:** `/hierarchies`
 
@@ -84,6 +86,8 @@ Conforme dito anteriormente, os recursos são acessados através de uma url, que
   }
 ]
 ```
+
+> **Importante:** As datas da  Hierarquia podem ser informadas para um intervalo completo, se estas se repetirem por todo este período. Para isso, basta substituir o campo `date` por `startDate` e `endDate`, contemplando todo o intervalo a ser integrado.
 
 ### Resultados
 **Identificação:** `/results`
