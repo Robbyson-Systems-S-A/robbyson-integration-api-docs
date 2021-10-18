@@ -96,8 +96,8 @@ Conforme dito anteriormente, os recursos são acessados através de uma url, que
 [
   {
     "collaboratorIdentification": "string",
-    "indicadorId": "string",
-    "resultado": "string",
+    "indicadorId": "number",
+    "resultado": "number",
     "date": "2018-12-07",
     "factors": [
       1,
