@@ -1,21 +1,26 @@
-## Recursos da API
+## Recursos de integração de dados
 
-Entende-se por recursos da API todos os tipos de dados que são trafegados por ela.
+Esta seção descreve os recursos do grupo de **integração de dados de operação**: colaboradores, indicadores, atributos, hierarquias e resultados. Todos seguem o mesmo fluxo de envio em lote orquestrado por *transactions* (veja [Workflow](workflow.html)) e são autenticados via **Token de cliente** (veja [Autenticação](autenticacao.html#modalidade-1-token-de-cliente-recursos-de-integracao-de-dados)).
 
-Conforme dito anteriormente, os recursos são acessados através de uma url, que será composta pelo endereço do serviço utilizado (produção ou sandbox) mais uma identificação do recurso consumido. Abaixo serão descritos cada um deles, com os detalhes para acesso.
+O grupo **AI Agent Runtime** (resposta de assistentes de IA) tem seção própria — veja [AI Agent Runtime](ai-agent-runtime.html).
+
+A URL final é composta pelo endereço do ambiente (`https://integration-api.robbyson.com/v1`) + caminho do recurso descrito abaixo.
 
 ### Colaboradores
-**Identificação:** `/collaborators`
 
-```js
+**Caminho:** `/collaborators`
+
+Cadastro do colaborador. Campos `name`, `identification`, `matricula`, `genre`, `active` e `birthDate` são obrigatórios.
+
+```json
 [
   {
-    "name": "string",               // campo obrigatório
-    "identification": "string",     // campo obrigatório
-    "matricula": "string",          // campo obrigatório
-    "genre": "M",                   // campo obrigatório
-    "active": true,                 // campo obrigatório
-    "birthDate": "2018-12-07",      // campo obrigatório
+    "name": "string",
+    "identification": "string",
+    "matricula": "string",
+    "genre": "M",
+    "active": true,
+    "birthDate": "2018-12-07",
     "admissionDate": "2018-12-07",
     "email": "user@example.com",
     "civilState": "string",
@@ -42,9 +47,12 @@ Conforme dito anteriormente, os recursos são acessados através de uma url, que
 ```
 
 ### Indicadores
-**Identificação:** `/indicators`
 
-```js
+**Caminho:** `/indicators`
+
+Catálogo de indicadores que serão pontuados nos resultados. `indicatorId` precisa ser único por contratante.
+
+```json
 [
   {
     "name": "string",
@@ -55,9 +63,12 @@ Conforme dito anteriormente, os recursos são acessados através de uma url, que
 ```
 
 ### Atributos
-**Identificação:** `/attributes`
 
-```js
+**Caminho:** `/attributes`
+
+Atributos qualificadores do colaborador (área, função, equipe, etc.) usados pela plataforma para segmentação de visibilidade.
+
+```json
 [
   {
     "collaboratorIdentification": "string",
@@ -69,12 +80,15 @@ Conforme dito anteriormente, os recursos são acessados através de uma url, que
 ]
 ```
 
-> **Importante:** As datas dos atributos podem ser informadas para um intervalo completo, se estas se repetirem por todo este período. Para isso, basta substituir o campo `date` por `startDate` e `endDate`, contemplando todo o intervalo a ser integrado.
+> **Importante:** atributos podem ser informados para um intervalo completo se o mesmo valor se repetir no período. Para isso, substitua `date` por `startDate` + `endDate` contemplando o intervalo.
 
 ### Hierarquia
-**Identificação:** `/hierarchies`
 
-```js
+**Caminho:** `/hierarchies`
+
+Posição do colaborador na estrutura organizacional. `levelWeight` define a profundidade do nível (1 = topo, valores maiores = subordinados); `parentIdentification` aponta para o `identification` do superior imediato.
+
+```json
 [
   {
     "collaboratorIdentification": "string",
@@ -87,17 +101,20 @@ Conforme dito anteriormente, os recursos são acessados através de uma url, que
 ]
 ```
 
-> **Importante:** As datas da  Hierarquia podem ser informadas para um intervalo completo, se estas se repetirem por todo este período. Para isso, basta substituir o campo `date` por `startDate` e `endDate`, contemplando todo o intervalo a ser integrado.
+> **Importante:** assim como atributos, hierarquias podem ser informadas para um intervalo completo usando `startDate` + `endDate` em vez de `date`. **Dados de hierarquias e atributos devem obrigatoriamente ser enviados na mesma transação** — veja [Workflow](workflow.html).
 
 ### Resultados
-**Identificação:** `/results`
 
-```js
+**Caminho:** `/results`
+
+Pontuação ou medição do colaborador em um indicador específico em uma data. `factors` é opcional e carrega os componentes que compuseram o resultado, quando aplicável.
+
+```json
 [
   {
     "collaboratorIdentification": "string",
-    "indicadorId": "number",
-    "resultado": "number",
+    "indicatorId": "string",
+    "result": 0,
     "date": "2018-12-07",
     "factors": [
       1,
@@ -107,3 +124,9 @@ Conforme dito anteriormente, os recursos são acessados através de uma url, que
   }
 ]
 ```
+
+### Transactions
+
+**Caminho:** `/transactions`
+
+Não é um recurso de dados propriamente dito, mas o **mecanismo de controle** do envio em lote — abertura, commit e consulta de status. Cada pacote enviado para os recursos acima é referenciado por um `transaction_id`. Detalhamento completo em [Workflow](workflow.html).
