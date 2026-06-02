@@ -1,10 +1,10 @@
-## AI Agent Runtime
+# AI Agent Runtime
 
 A **AI Agent Runtime** é a superfície REST da API de Integração consumida por *runtimes* externos de assistentes de IA que conversam com usuários da plataforma como participantes do chat. Pense em n8n, Zapier, AWS Lambda, ou qualquer orquestrador HTTP — todos consomem o mesmo contrato.
 
-Diferente da [integração de dados](recursos.html), aqui o fluxo é **orientado a eventos**: a plataforma entrega o evento ao runtime via webhook, o runtime processa (tipicamente consultando o LLM da preferência dele), e responde via REST.
+Diferente da [integração de dados](recursos.md), aqui o fluxo é **orientado a eventos**: a plataforma entrega o evento ao runtime via webhook, o runtime processa (tipicamente consultando o LLM da preferência dele), e responde via REST.
 
-### Visão geral do fluxo
+## Visão geral do fluxo
 
 ```
                     ┌────────────────────────────────────────────────┐
@@ -35,7 +35,7 @@ Diferente da [integração de dados](recursos.html), aqui o fluxo é **orientado
 
 Você cadastra **uma vez** o endpoint do seu runtime no painel administrativo Robbyson (junto com a credencial que ele espera receber). A partir daí, todo evento do agente é entregue automaticamente.
 
-### Cadastro do webhook (uma vez, no admin)
+## Cadastro do webhook (uma vez, no admin)
 
 Antes do primeiro evento chegar, o administrador Robbyson cadastra no painel do agente IA:
 
@@ -43,7 +43,7 @@ Antes do primeiro evento chegar, o administrador Robbyson cadastra no painel do 
 * **Eventos assinados** — tipicamente `user_message` (mensagem do usuário pro agente). Outros eventos disponíveis: `conversation_opened`, `agent_updated`, `agent_disabled`, `session_started`.
 * **Autenticação (opcional)** — você fornece o `header name` e `header value` que o Robbyson deve enviar em toda *delivery*. Pode ser `Authorization: Bearer <seu-token>`, `X-API-Key: <chave>`, ou qualquer combinação que seu runtime saiba validar. Webhooks também podem ser cadastrados sem autenticação, para endpoints internos protegidos por outro meio (rede privada, IP allowlist, mTLS no proxy).
 
-### Recebendo eventos (delivery do webhook)
+## Recebendo eventos (delivery do webhook)
 
 A plataforma faz `POST` para a URL cadastrada com **JSON envelope** e headers de auditoria:
 
@@ -85,7 +85,7 @@ O `X-Robbyson-Delivery-Id` é **único por tentativa** — use-o para deduplicar
 
 **Resposta esperada do seu runtime:** qualquer `2xx` em até 10s. Qualquer outro status, timeout ou network error é tratado como falha → retentativa.
 
-#### Política de retry e auto-disable
+### Política de retry e auto-disable
 
 | Tentativa | Atraso após falha |
 |-----------|-------------------|
@@ -98,11 +98,11 @@ O `X-Robbyson-Delivery-Id` é **único por tentativa** — use-o para deduplicar
 
 Após 5 falhas consecutivas, o webhook é **auto-desabilitado** e o administrador precisa reabilitar manualmente no painel. Defesa contra bombardeio de endpoint quebrado.
 
-### Endpoints REST (resposta do runtime)
+## Endpoints REST (resposta do runtime)
 
-Todos os endpoints abaixo estão sob `https://integration-api.robbyson.com/v1/agent-runtime/` e exigem header `Authorization: Bearer <jwt>` (veja [Autenticação](autenticacao.html#modalidade-2-bearer-jwt-por-agente-ai-agent-runtime)).
+Todos os endpoints abaixo estão sob `https://integration-api.robbyson.com/v1/agent-runtime/` e exigem header `Authorization: Bearer <jwt>` (veja [Autenticação](autenticacao.md#modalidade-2--bearer-jwt-por-agente-ai-agent-runtime)).
 
-#### `GET /agent-runtime/agents/me`
+### `GET /agent-runtime/agents/me`
 
 Retorna a configuração do agente identificado pelo JWT — útil pra o runtime carregar `system_prompt`, `metadata`, etc. no início de cada execução.
 
@@ -124,7 +124,7 @@ Retorna a configuração do agente identificado pelo JWT — útil pra o runtime
 }
 ```
 
-#### `GET /agent-runtime/conversations/:id/messages`
+### `GET /agent-runtime/conversations/:id/messages`
 
 Histórico recente da conversa, **decifrado** (plaintext) para que o runtime monte contexto para o LLM. Aceita query strings opcionais `limit` (default 10, máx 100) e `before` (ID de mensagem para paginação).
 
@@ -148,7 +148,7 @@ Histórico recente da conversa, **decifrado** (plaintext) para que o runtime mon
 }
 ```
 
-#### `POST /agent-runtime/conversations/:id/typing`
+### `POST /agent-runtime/conversations/:id/typing`
 
 Liga ou desliga o indicador "digitando..." na conversa do usuário. Best-effort — não bloqueia o fluxo se falhar.
 
@@ -162,7 +162,7 @@ Liga ou desliga o indicador "digitando..." na conversa do usuário. Best-effort 
 
 **Resposta 204** (sem corpo).
 
-#### `POST /agent-runtime/messages`
+### `POST /agent-runtime/messages`
 
 Entrega a resposta do agente para o usuário. **Idempotente por header `Idempotency-Key`** (recomendado usar o `message_id` do evento original) — janela de dedup de 24h. Retentativas com a mesma key retornam o resultado original com `status: "duplicate"`.
 
@@ -207,7 +207,7 @@ A mensagem do agente pode usar **Markdown leve** (negrito, listas, tabelas, bloc
 
 **Resposta 200** com `status: "duplicate"` em retentativas com o mesmo `Idempotency-Key`.
 
-### Rate limit
+## Rate limit
 
 A plataforma aplica rate limit em **duas camadas** sobre as suas chamadas:
 
@@ -225,7 +225,7 @@ Quando excedido, a API retorna `429 Too Many Requests`:
 
 Trate como falha temporária e re-tente após o tempo indicado.
 
-### Idempotência ponta a ponta
+## Idempotência ponta a ponta
 
 A plataforma garante que **uma mensagem só é entregue uma vez** ao usuário final, mesmo em cenários de retry da sua aplicação ou da rede:
 
@@ -234,7 +234,7 @@ A plataforma garante que **uma mensagem só é entregue uma vez** ao usuário fi
 
 Recomendamos usar o `message_id` do evento original como `Idempotency-Key` — facilita o rastreio.
 
-### Erros
+## Erros
 
 A API retorna erros no formato OAuth-style:
 
@@ -258,7 +258,7 @@ Códigos relevantes:
 | 429  | (sem `error`)              | Rate limit excedido (veja `retry_after_ms`)                       |
 | 5xx  | `internal_error`           | Erro interno da plataforma (re-tente com backoff)                 |
 
-### Boas práticas
+## Boas práticas
 
 * **Valide o header de auth na entrada do seu webhook** antes de processar — qualquer requisição sem o header esperado deve receber 401, mesmo que pareça vir da plataforma.
 * **Use `Idempotency-Key = message_id`** no POST de resposta — simplifica investigação de incidente.
@@ -267,6 +267,6 @@ Códigos relevantes:
 * **Trate o `system_prompt` como configuração da plataforma**, não do seu runtime — busque via `GET /agents/me` e não hardcode no workflow.
 * **Em caso de mensagem com conteúdo muito longo da parte do LLM**, prefira dividir em múltiplas mensagens em vez de truncar — cada mensagem é uma chamada separada ao `POST /messages` com `Idempotency-Key` distinto.
 
-### Workflow de referência
+## Workflow de referência
 
 A plataforma disponibiliza um **workflow de referência em n8n** ilustrando o caso de uso completo (receber evento → buscar histórico → chamar LLM → responder via API), incluindo as três credenciais necessárias e os 10 nós do pipeline. Solicite à equipe Robbyson o template `Agente - Robbyson Operacao.json` para importar no seu n8n.

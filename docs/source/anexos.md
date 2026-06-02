@@ -1,6 +1,6 @@
-## Anexos
+# Anexos
 
-### Documentação técnica interativa (Swagger)
+## Documentação técnica interativa (Swagger)
 
 Cada serviço da API expõe um Swagger UI para teste e depuração interativa:
 
@@ -16,16 +16,16 @@ Cada serviço da API expõe um Swagger UI para teste e depuração interativa:
 
 Os Swaggers de sandbox seguem o mesmo padrão, trocando `integration-api` por `integration-sandbox`.
 
-### Tipos comuns
+## Tipos comuns
 
-#### Formato de datas
+### Formato de datas
 
 Todas as datas seguem ISO 8601:
 
 * Data simples: `YYYY-MM-DD` (ex: `2026-05-22`)
 * Timestamp UTC: `YYYY-MM-DDTHH:mm:ss.sssZ` (ex: `2026-05-22T20:35:47.535Z`)
 
-#### Formato de respostas de erro
+### Formato de respostas de erro
 
 **Integração de dados** (formato JSON Schema validation):
 
@@ -48,7 +48,7 @@ Todas as datas seguem ISO 8601:
 }
 ```
 
-### Glossário
+## Glossário
 
 | Termo                 | Significado                                                              |
 |-----------------------|--------------------------------------------------------------------------|
@@ -62,7 +62,7 @@ Todas as datas seguem ISO 8601:
 | **Idempotency-Key**   | Header HTTP que evita duplicação em retentativas do POST /messages       |
 | **Scope**             | Permissão fina por endpoint no AI Agent Runtime (ex: `messages:write`)   |
 
-### Suporte
+## Suporte
 
 * **Solicitação de credenciais** (Token de cliente, JWT de agente): equipe de implantação Robbyson.
 * **Acompanhamento de transações com falha**: o status e a descrição dos erros estão na resposta do `GET /transactions/:id`. Para análise mais profunda, contate o suporte com o `transaction_id`.
