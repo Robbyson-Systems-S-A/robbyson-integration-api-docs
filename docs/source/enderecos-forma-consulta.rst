@@ -1,45 +1,101 @@
 Endereços e formas de consulta
 ------------------------------
 
-A API de Integração do Robbyson foi desenvolvida na arquitetura `REST <https://en.wikipedia.org/wiki/Representational_state_transfer>`_.
-Desta forma, toda comunicação é baseada em requisições ``https``, não
-dependendo da linguagem escolhida como cliente desta API. Esta
-arquitetura também prevê a utilização dos `verbos http <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods>`_ para denotar
-quais ações estão sendo executadas em determinado momento.
+A API de Integração Robbyson é uma API
+`REST <https://en.wikipedia.org/wiki/Representational_state_transfer>`_
+sobre HTTPS. Toda comunicação é feita por requisições HTTP padrão — não
+depende da linguagem do cliente — e utiliza os
+`verbos HTTP <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods>`_
+para denotar a ação executada.
 
-De forma geral, entende-se que podem ser executadas três tipos
-diferentes de ações:
+Verbos suportados:
 
-+-----------------------------------+-----------------------------------+
-| Método                            | Descrição                         |
-+===================================+===================================+
-| ``POST``                          | Este método denota a criação de   |
-|                                   | um novo recurso na API. Ele é     |
-|                                   | responsável pelo envio de dados   |
-|                                   | novos à nossa API. Outra função,  |
-|                                   | que será detalhada mais à frente, |
-|                                   | é a criação e conclusão de        |
-|                                   | transações na API.                |
-+-----------------------------------+-----------------------------------+
-| ``PUT``                           | Método também de escrita de dados |
-|                                   | na API, porém com                 |
-|                                   | responsabilidade de atualização   |
-|                                   | dos dados.                        |
-+-----------------------------------+-----------------------------------+
-| ``GET``                           | Método de consulta de dados na    |
-|                                   | API. Este método não produz       |
-|                                   | nenhum tipo de alteração nos      |
-|                                   | dados enviados para a API         |
-+-----------------------------------+-----------------------------------+
++----------+----------------------------------------------------------+
+| Método   | Descrição                                                |
++==========+==========================================================+
+| ``GET``  | Consulta de dados. Não altera estado.                    |
++----------+----------------------------------------------------------+
+| ``POST`` | Criação de um novo recurso ou disparo de uma ação        |
+|          | (envio de pacote, abertura/commit de *transaction*,      |
+|          | entrega de mensagem do agente).                          |
++----------+----------------------------------------------------------+
+| ``PUT``  | Atualização de dados existentes.                         |
++----------+----------------------------------------------------------+
+| ``PATCH``| Atualização parcial de dados existentes.                 |
++----------+----------------------------------------------------------+
+|``DELETE``| Remoção de dados existentes.                             |
++----------+----------------------------------------------------------+
 
-Dado o funcionamento via requisições aos serviços, deve-se notar que a
-construção da URL consultada é feita pelo endereço do serviço a ser
-consumido - base de produção ou de testes - mais o caminho do recurso.
-Os recursos também serão detalhados nos próximos tópicos.
+Ambientes
+~~~~~~~~~
 
-======== ===========================================
-Ambiente Endereço
-======== ===========================================
-Produção https://integration-api.robbyson.com/v1
-Testes   https://integration-sandbox.robbyson.com/v1
-======== ===========================================
+A URL final é composta pelo endereço do ambiente + caminho do recurso.
+
++----------+-------------------------------------------------+
+| Ambiente | Endereço                                        |
++==========+=================================================+
+| Produção | ``https://integration-api.robbyson.com/v1``     |
++----------+-------------------------------------------------+
+| Sandbox  | ``https://integration-sandbox.robbyson.com/v1`` |
++----------+-------------------------------------------------+
+
+.. note::
+
+    A URL do sandbox espelha estruturalmente a de produção (mesmos endpoints,
+    mesmos contratos), mas os dados são isolados e podem ser apagados a
+    qualquer momento. Use-a para validação inicial de integrações antes de
+    apontar para produção.
+
+Grupos de recursos
+~~~~~~~~~~~~~~~~~~
+
+**Integração de dados de operação** (envio em lote, autenticação por *Token*):
+
++--------------------+--------------------------------------------------+
+| Recurso            | Caminho base                                     |
++====================+==================================================+
+| Colaboradores      | ``/collaborators``                               |
++--------------------+--------------------------------------------------+
+| Indicadores        | ``/indicators``                                  |
++--------------------+--------------------------------------------------+
+| Atributos          | ``/attributes``                                  |
++--------------------+--------------------------------------------------+
+| Hierarquias        | ``/hierarchies``                                 |
++--------------------+--------------------------------------------------+
+| Resultados         | ``/results``                                     |
++--------------------+--------------------------------------------------+
+| Transactions       | ``/transactions``                                |
++--------------------+--------------------------------------------------+
+
+**AI Agent Runtime** (resposta de assistentes de IA, autenticação por
+*Bearer JWT*):
+
++--------------------+---------------------------------------------------------+
+| Recurso            | Caminho base                                            |
++====================+=========================================================+
+| Agente (config)    | ``/agent-runtime/agents/me``                            |
++--------------------+---------------------------------------------------------+
+| Mensagens          | ``/agent-runtime/messages``                             |
++--------------------+---------------------------------------------------------+
+| Conversas          | ``/agent-runtime/conversations/:id/messages``           |
+|                    |                                                         |
+|                    | ``/agent-runtime/conversations/:id/typing``             |
++--------------------+---------------------------------------------------------+
+
+Os caminhos dos dois grupos podem ser consumidos pelo mesmo cliente, mas
+**utilizam credenciais e fluxos distintos** — veja :doc:`autenticacao`,
+:doc:`workflow` e :doc:`ai-agent-runtime`.
+
+Convenções gerais
+~~~~~~~~~~~~~~~~~
+
+* Content-Type esperado: ``application/json``.
+* Datas em formato ISO 8601 (``YYYY-MM-DD`` para datas simples,
+  ``YYYY-MM-DDTHH:mm:ssZ`` para timestamps).
+* Códigos de resposta seguem o padrão HTTP:
+
+  * ``2xx`` — sucesso
+  * ``4xx`` — erro do cliente (validação, autenticação, autorização)
+  * ``5xx`` — erro do servidor
+
+* Em erros de validação, o corpo da resposta detalha o campo e o motivo.
