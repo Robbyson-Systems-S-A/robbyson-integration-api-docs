@@ -73,7 +73,23 @@ X-Robbyson-Contractor-Id: 1
         "message_id": "6a10be2216180d0019c5a30e",
         "conversation_id": "6a0f8798bd61d60031f874aa",
         "target": "ai_agent_rh_assistant",
-        "sender": "09270854612",
+        "sender": "12345678901",
+        "sender_context": {
+            "identification": "12345678901",
+            "contractor_id": 1,
+            "name": "MARIA SILVA",
+            "nickname": "Maria",
+            "hierarchy": {
+                "level": { "id": "lv-3", "name": "Analista", "weight": 3 },
+                "parent_immediate": "11122233344"
+            },
+            "parents": ["11122233344"],
+            "kite_level": 5,
+            "primaryAttribute": { "name": "regiao", "value": "SP" },
+            "attributes": [
+                { "_id": "a1", "value": "SP", "attribute": { "_id": "att-r", "name": "regiao", "primary": true } }
+            ]
+        },
         "content": "Olá, qual o saldo do meu banco de horas?",
         "sent_at": "2026-05-22T20:35:47.535Z",
         "idempotency_key": "6a10be2216180d0019c5a30e"
@@ -82,6 +98,46 @@ X-Robbyson-Contractor-Id: 1
 ```
 
 O `X-Robbyson-Delivery-Id` é **único por tentativa** — use-o para deduplicar caso a sua aplicação queira garantia extra (a plataforma também faz retentativa em falhas; cada uma terá `delivery_id` novo, mas o `event_id` se repete).
+
+### Contexto do usuário no payload — `sender_context` / `user_context`
+
+Além do campo `sender` (string com o `identification` do usuário, mantido para compatibilidade com integradores antigos), o payload traz um objeto **`sender_context`** enriquecido com dados do usuário já disponíveis na sessão. Use-o para personalizar o prompt do LLM, rotear por hierarquia ou aplicar regras contextuais **sem precisar chamar de volta a API**.
+
+O mesmo objeto aparece em outros eventos sob nomes diferentes:
+
+| Evento                | Campo                    |
+|-----------------------|--------------------------|
+| `user_message`        | `sender_context`         |
+| `session_started`     | `user_context`           |
+| `conversation_opened` | `user_context`           |
+| `agent_updated`       | `updated_by_context`     |
+| `agent_disabled`      | `deleted_by_context` (quando ação foi delete manual) |
+
+**Schema do objeto:**
+
+| Campo                        | Tipo    | Sempre presente? | Descrição                                                        |
+|------------------------------|---------|------------------|------------------------------------------------------------------|
+| `identification`             | string  | ✅ sim           | Identificador do usuário (CPF em muitos contratantes)            |
+| `contractor_id`              | number  | ✅ sim           | Contratante ao qual o usuário pertence                           |
+| `name`                       | string  | quando presente  | Nome completo cadastrado                                         |
+| `nickname`                   | string  | quando presente  | Apelido/nome curto                                               |
+| `about`                      | string  | quando presente  | Bio/descrição livre do perfil                                    |
+| `externalKey`                | string  | quando presente  | Chave de correlação externa (ex: ID do sistema de RH)            |
+| `hierarchy.level.id`         | string  | quando enriquecida | ID do nível hierárquico                                        |
+| `hierarchy.level.name`       | string  | quando enriquecida | Nome do nível (ex: "Analista", "Coordenador")                  |
+| `hierarchy.level.weight`     | number  | quando enriquecida | Peso ordinal do nível                                          |
+| `hierarchy.parent_immediate` | string  | quando enriquecida | `identification` do superior direto                            |
+| `parents[]`                  | string[]| quando enriquecida | Cadeia de identifications superiores                          |
+| `kite_level`                 | number  | quando enriquecida | Nível de agrupamento kite                                     |
+| `attributes[]`               | array   | quando enriquecida | Cadeia completa de atributos do usuário no formato original    |
+| `primaryAttribute`           | object  | quando enriquecida | Atributo primário — conveniência para não iterar `attributes`  |
+
+**Notas:**
+
+- Campos vindos da sessão são **omitidos silenciosamente** se não estiverem enriquecidos (não vêm como `null`/`""`)
+- Campos sensíveis nunca saem: senha, token, foto, id interno, permissões de chat
+- O objeto `attributes` sai no shape original da sessão para não perder informação; use `primaryAttribute` como atalho quando só precisar do principal
+- Para **backward compatibility**, o campo `sender` (string) continua presente ao lado de `sender_context` — integradores antigos que só liam `sender` seguem funcionando
 
 **Resposta esperada do seu runtime:** qualquer `2xx` em até 10s. Qualquer outro status, timeout ou network error é tratado como falha → retentativa.
 
@@ -126,7 +182,14 @@ Retorna a configuração do agente identificado pelo JWT — útil pra o runtime
 
 ### `GET /agent-runtime/conversations/:id/messages`
 
-Histórico recente da conversa, **decifrado** (plaintext) para que o runtime monte contexto para o LLM. Aceita query strings opcionais `limit` (default 10, máx 100) e `before` (ID de mensagem para paginação).
+Histórico da conversa, **decifrado** (plaintext) e **bidirecional** — retorna mensagens de ambos os lados (usuário e agente) para que o runtime monte contexto completo para o LLM.
+
+**Query strings:**
+
+| Parâmetro | Default | Máximo | Descrição                                                              |
+|-----------|---------|--------|------------------------------------------------------------------------|
+| `limit`   | 50      | 200    | Número máximo de mensagens retornadas                                  |
+| `before`  | —       | —      | Cursor descendente — retorna mensagens com `_id` menor (mais antigas) que este `message_id`. Usar o `_id` da última mensagem da página anterior para paginar. |
 
 **Escopo necessário:** `conversations:read`.
 
@@ -136,17 +199,67 @@ Histórico recente da conversa, **decifrado** (plaintext) para que o runtime mon
 {
     "data": [
         {
-            "_id": "...",
-            "message_id": "...",
-            "sender": "09270854612",
-            "receiver": "ai_agent_rh_assistant",
-            "content": "Mensagem em plaintext",
-            "receivedAt": "2026-05-22T20:35:47.535Z",
+            "_id": "6a10be2216180d0019c5a30f",
+            "message_id": "6a10be2216180d0019c5a30f",
+            "sender": "ai_agent_rh_assistant",
+            "role": "agent",
+            "sentAt": "2026-05-22T20:35:52.100Z",
+            "content": "Olá! Vou consultar seu saldo agora.",
+            "metadata": { }
+        },
+        {
+            "_id": "6a10be2216180d0019c5a30e",
+            "message_id": "6a10be2216180d0019c5a30e",
+            "sender": "12345678901",
+            "role": "user",
+            "sentAt": "2026-05-22T20:35:47.535Z",
+            "content": "Olá, qual o saldo do meu banco de horas?",
             "metadata": { }
         }
     ]
 }
 ```
+
+**Campos da mensagem:**
+
+| Campo             | Descrição                                                                       |
+|-------------------|---------------------------------------------------------------------------------|
+| `_id`, `message_id` | ObjectId único da mensagem (mesmos valores; ambos preservados por compatibilidade) |
+| `sender`          | `identification` de quem enviou (usuário) ou `ai_agent_<code>` (agente)          |
+| `role`            | `"user"` ou `"agent"` — derivado do `sender` para o runtime não ter que inferir  |
+| `sentAt`          | Timestamp de envio (ISO 8601)                                                    |
+| `content`         | Texto em plaintext                                                               |
+| `metadata`        | Objeto livre — usado inclusive para marcar **mensagens de sistema** (ver abaixo) |
+| `file`            | Anexo (se houver)                                                                |
+| `replied_message` | Referência à mensagem respondida (thread)                                        |
+
+**Ordem:** descendente por `_id` (mais recente primeiro). Combine `limit` + `before` para paginação regressiva no estilo scroll infinito.
+
+#### Mensagens de sistema — marker de reset de contexto
+
+Quando o usuário clica no botão **"Resetar contexto"** no chat, a plataforma injeta uma **entrada de sistema** no histórico da conversa. Essa entrada chega no payload de `/messages` como uma mensagem normal, mas com metadata identificando:
+
+```json
+{
+    "_id": "6a10be2216180d0019c5a333",
+    "message_id": "6a10be2216180d0019c5a333",
+    "sender": "ai_agent_rh_assistant",
+    "role": "agent",
+    "sentAt": "2026-05-22T20:40:12.000Z",
+    "content": "chat_system_session_reset",
+    "metadata": {
+        "system": true,
+        "system_type": "session_started",
+        "triggered_by": "12345678901"
+    }
+}
+```
+
+**O que o runtime deve fazer:** ao montar o contexto para o LLM, **ignorar todas as mensagens anteriores ao último marker com `metadata.system_type === "session_started"`**. Esse é o mecanismo pelo qual o usuário controla o contexto que o agente considera — sem esse tratamento, o LLM manteria o histórico completo e responderia como se o reset não tivesse acontecido.
+
+O histórico completo permanece armazenado no chat (o usuário pode rolar para cima e revisitar), mas a semântica de "conversa fresca" é responsabilidade do integrador respeitar o marker.
+
+Além do marker inline, a plataforma também dispara o evento `session_started` via webhook — subscribers desse evento recebem sinal para resetar cache/state próprio do runtime.
 
 ### `POST /agent-runtime/conversations/:id/typing`
 
@@ -179,8 +292,8 @@ Idempotency-Key: <message_id do evento original>
 
 ```json
 {
-    "target_identification": "09270854612",
-    "content": "Olá Geldo, seu saldo de banco de horas é...",
+    "target_identification": "12345678901",
+    "content": "Olá Maria, seu saldo de banco de horas é...",
     "conversation_id": "6a0f8798bd61d60031f874aa",
     "in_reply_to": "6a10be2216180d0019c5a30e",
     "metadata": {
