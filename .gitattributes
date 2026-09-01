@@ -1,0 +1,11 @@
+# Terminadores de linha normalizados em LF.
+#
+# Preventivo: editor mal configurado converte um arquivo inteiro ao
+# salvar, e o commit seguinte aparece como o documento reescrito por
+# completo — revisão fica impossível e qualquer merge conflita em tudo.
+# Aconteceu na wiki, num documento de 900 linhas cuja mudança real eram
+# três linhas em branco.
+#
+# `text=auto` deixa o Git detectar binário sozinho, então imagens e
+# anexos não são tocados.
+* text=auto eol=lf
